@@ -7,10 +7,18 @@ export const authConfig: AuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          prompt: "select_account",
+          access_type: "offline",
+          response_type: "code"
+        }
+      }
     }),
   ],
   session: {
-    strategy: "jwt"
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   secret: process.env.AUTH_SECRET,
   callbacks: {
@@ -18,6 +26,8 @@ export const authConfig: AuthOptions = {
       console.log('=== Auth Redirect Debug ===');
       console.log('Incoming URL:', url);
       console.log('Base URL:', baseUrl);
+      console.log('Environment:', process.env.NODE_ENV);
+      console.log('NEXTAUTH_URL:', process.env.NEXTAUTH_URL);
 
       if (url.startsWith('/')) {
         const finalUrl = `${baseUrl}${url}`;
@@ -31,34 +41,13 @@ export const authConfig: AuthOptions = {
       console.log('Falling back to base URL:', baseUrl);
       return baseUrl;
     },
-    session: async ({ session, token }) => {
-      console.log('=== Session Callback Debug ===');
-      console.log('Creating session with token:', token);
-
-      return {
-        ...session,
-        user: {
-          ...session.user,
-          id: token.id || token.sub,
-          accessToken: token.accessToken,
-        }
-      };
-    },
     jwt: async ({ token, user, account }) => {
       console.log('=== JWT Callback Debug ===');
-      console.log('Incoming user data:', user);
-      console.log('Token payload:', {
-        sub: token.sub,
-        email: token.email,
-        hasAccessToken: !!token.accessToken
-      });
-
       if (account && user) {
         console.log('New sign in detected');
-        console.log('Account provider:', account.provider);
-        console.log('Has access token:', !!account.access_token);
+        console.log('Full account data:', account);
+        console.log('Full user data:', user);
 
-        // Merge all user information into the token
         return {
           ...token,
           accessToken: account.access_token,
@@ -69,6 +58,20 @@ export const authConfig: AuthOptions = {
         };
       }
       return token;
+    },
+    session: async ({ session, token }) => {
+      console.log('=== Session Callback Debug ===');
+      console.log('Session before:', session);
+      const enhancedSession = {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.id || token.sub,
+          accessToken: token.accessToken,
+        }
+      };
+      console.log('Session after:', enhancedSession);
+      return enhancedSession;
     }
   }
 }
