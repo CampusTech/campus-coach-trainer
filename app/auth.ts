@@ -15,8 +15,12 @@ export const authConfig: AuthOptions = {
   secret: process.env.AUTH_SECRET,
   callbacks: {
     redirect({ url, baseUrl }) {
-      if (url.startsWith(baseUrl)) return url
-      if (url.startsWith('/')) return new URL(url, baseUrl).toString()
+      if (url.startsWith('/')) {
+        return `${baseUrl}${url}`
+      }
+      if (url.startsWith(baseUrl)) {
+        return url
+      }
       return baseUrl
     },
     session: async ({ session }) => {
