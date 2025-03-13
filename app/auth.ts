@@ -31,26 +31,42 @@ export const authConfig: AuthOptions = {
       console.log('Falling back to base URL:', baseUrl);
       return baseUrl;
     },
-    session: async ({ session }) => {
+    session: async ({ session, token }) => {
       console.log('=== Session Callback Debug ===');
-      console.log('Session data:', {
-        user: session?.user,
-        expires: session?.expires
-      });
-      return session;
+      console.log('Creating session with token:', token);
+
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.id || token.sub,
+          accessToken: token.accessToken,
+        }
+      };
     },
     jwt: async ({ token, user, account }) => {
       console.log('=== JWT Callback Debug ===');
+      console.log('Incoming user data:', user);
       console.log('Token payload:', {
         sub: token.sub,
         email: token.email,
         hasAccessToken: !!token.accessToken
       });
+
       if (account && user) {
         console.log('New sign in detected');
         console.log('Account provider:', account.provider);
         console.log('Has access token:', !!account.access_token);
-        token.accessToken = account.access_token;
+
+        // Merge all user information into the token
+        return {
+          ...token,
+          accessToken: account.access_token,
+          email: user.email,
+          name: user.name,
+          picture: user.image,
+          id: user.id || token.sub,
+        };
       }
       return token;
     }
