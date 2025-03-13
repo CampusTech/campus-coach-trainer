@@ -15,7 +15,18 @@ export const authConfig: AuthOptions = {
   secret: process.env.AUTH_SECRET,
   callbacks: {
     redirect({ url, baseUrl }) {
-      return url.startsWith(baseUrl) ? url : baseUrl
+      if (url.startsWith(baseUrl)) return url
+      if (url.startsWith('/')) return new URL(url, baseUrl).toString()
+      return baseUrl
+    },
+    session: async ({ session, token }) => {
+      return session
+    },
+    jwt: async ({ token, user, account }) => {
+      if (account && user) {
+        token.accessToken = account.access_token
+      }
+      return token
     }
   }
 }
