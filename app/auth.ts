@@ -28,17 +28,26 @@ export const authConfig: AuthOptions = {
       console.log('Base URL:', baseUrl);
       console.log('Environment:', process.env.NODE_ENV);
 
-      // For sign-in, we want to capture the callbackUrl if provided
-      const urlObj = new URL(url, baseUrl);
-      const callbackUrl = urlObj.searchParams.get('callbackUrl');
-
-      if (callbackUrl) {
-        console.log('Found callback URL:', callbackUrl);
-        return callbackUrl;
+      // Always return the original URL if it's part of our app
+      if (url.startsWith(baseUrl)) {
+        console.log('Keeping original URL:', url);
+        return url;
       }
 
-      // Default to home page
-      console.log('Redirecting to home page');
+      // For relative URLs, append to base URL
+      if (url.startsWith('/')) {
+        const finalUrl = `${baseUrl}${url}`;
+        console.log('Converting relative URL:', finalUrl);
+        return finalUrl;
+      }
+
+      // For sign-in, explicitly return to home page
+      if (url.includes('/api/auth/signin')) {
+        console.log('Post-signin redirect to home');
+        return baseUrl;
+      }
+
+      console.log('Default redirect to:', baseUrl);
       return baseUrl;
     },
     jwt: async ({ token, user, account }) => {
