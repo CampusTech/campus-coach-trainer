@@ -1,20 +1,16 @@
-import { NextResponse } from "next/server"
-import type { NextRequest } from "next/server"
+import { withAuth } from "next-auth/middleware"
 
-export async function middleware(request: NextRequest) {
-  const authCookie = request.cookies.get('next-auth.session-token')
-  
-  if (!authCookie) {
-    return NextResponse.redirect(new URL('/api/auth/signin', request.url))
-  }
-  
-  return NextResponse.next()
-}
+export default withAuth({
+  pages: {
+    signIn: "/",  // redirect to home page for sign in
+  },
+})
 
 export const config = {
   matcher: [
-    '/',
-    '/chat/:path*',
-    '/((?!api|_next/static|_next/image|favicon.ico|auth).*)',
-  ],
-} 
+    // Add paths that require authentication
+    "/api/chat/:path*",  // protect chat API routes
+    "/dashboard/:path*", // protect dashboard routes if you have any
+    // Don't add "/" since we want it public for sign-in
+  ]
+}

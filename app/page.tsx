@@ -1,17 +1,11 @@
-'use client'
-
+import { auth } from "./auth"
 import Chat from './components/Chat'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useSession } from "next-auth/react"
 import SignInButton from './components/SignInButton'
 
-export default function Home() {
-  const { data: session, status } = useSession()
-
-  if (status === "loading") {
-    return <div>Loading...</div>
-  }
+export default async function Home() {
+  const session = await auth()  // This won't force a redirect now
 
   if (!session) {
     return (
