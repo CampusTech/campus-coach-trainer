@@ -27,18 +27,18 @@ export const authConfig: AuthOptions = {
       console.log('Incoming URL:', url);
       console.log('Base URL:', baseUrl);
       console.log('Environment:', process.env.NODE_ENV);
-      console.log('NEXTAUTH_URL:', process.env.NEXTAUTH_URL);
 
-      if (url.startsWith('/')) {
-        const finalUrl = `${baseUrl}${url}`;
-        console.log('Redirecting to relative path:', finalUrl);
-        return finalUrl;
+      // For sign-in, we want to capture the callbackUrl if provided
+      const urlObj = new URL(url, baseUrl);
+      const callbackUrl = urlObj.searchParams.get('callbackUrl');
+
+      if (callbackUrl) {
+        console.log('Found callback URL:', callbackUrl);
+        return callbackUrl;
       }
-      if (url.startsWith(baseUrl)) {
-        console.log('Redirecting to same-origin URL:', url);
-        return url;
-      }
-      console.log('Falling back to base URL:', baseUrl);
+
+      // Default to home page
+      console.log('Redirecting to home page');
       return baseUrl;
     },
     jwt: async ({ token, user, account }) => {
