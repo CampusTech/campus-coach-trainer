@@ -23,40 +23,12 @@ export const authConfig: AuthOptions = {
   secret: process.env.AUTH_SECRET,
   callbacks: {
     redirect({ url, baseUrl }) {
-      console.log('=== Auth Redirect Debug ===');
-      console.log('Incoming URL:', url);
-      console.log('Base URL:', baseUrl);
-      console.log('Environment:', process.env.NODE_ENV);
-
-      // Always return the original URL if it's part of our app
-      if (url.startsWith(baseUrl)) {
-        console.log('Keeping original URL:', url);
-        return url;
-      }
-
-      // For relative URLs, append to base URL
-      if (url.startsWith('/')) {
-        const finalUrl = `${baseUrl}${url}`;
-        console.log('Converting relative URL:', finalUrl);
-        return finalUrl;
-      }
-
-      // For sign-in, explicitly return to home page
-      if (url.includes('/api/auth/signin')) {
-        console.log('Post-signin redirect to home');
-        return baseUrl;
-      }
-
-      console.log('Default redirect to:', baseUrl);
-      return baseUrl;
+      if (url.startsWith(baseUrl)) return url
+      if (url.startsWith('/')) return `${baseUrl}${url}`
+      return baseUrl
     },
     jwt: async ({ token, user, account }) => {
-      console.log('=== JWT Callback Debug ===');
       if (account && user) {
-        console.log('New sign in detected');
-        console.log('Full account data:', account);
-        console.log('Full user data:', user);
-
         return {
           ...token,
           accessToken: account.access_token,
@@ -64,23 +36,19 @@ export const authConfig: AuthOptions = {
           name: user.name,
           picture: user.image,
           id: user.id || token.sub,
-        };
+        }
       }
-      return token;
+      return token
     },
     session: async ({ session, token }) => {
-      console.log('=== Session Callback Debug ===');
-      console.log('Session before:', session);
-      const enhancedSession = {
+      return {
         ...session,
         user: {
           ...session.user,
           id: token.id || token.sub,
           accessToken: token.accessToken,
         }
-      };
-      console.log('Session after:', enhancedSession);
-      return enhancedSession;
+      }
     }
   }
 }
