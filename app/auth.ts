@@ -19,7 +19,7 @@ export const authConfig: AuthOptions = {
       if (url.startsWith('/')) return new URL(url, baseUrl).toString()
       return baseUrl
     },
-    session: async ({ session, token }) => {
+    session: async ({ session }) => {
       return session
     },
     jwt: async ({ token, user, account }) => {
