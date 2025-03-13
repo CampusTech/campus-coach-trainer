@@ -15,22 +15,44 @@ export const authConfig: AuthOptions = {
   secret: process.env.AUTH_SECRET,
   callbacks: {
     redirect({ url, baseUrl }) {
+      console.log('=== Auth Redirect Debug ===');
+      console.log('Incoming URL:', url);
+      console.log('Base URL:', baseUrl);
+
       if (url.startsWith('/')) {
-        return `${baseUrl}${url}`
+        const finalUrl = `${baseUrl}${url}`;
+        console.log('Redirecting to relative path:', finalUrl);
+        return finalUrl;
       }
       if (url.startsWith(baseUrl)) {
-        return url
+        console.log('Redirecting to same-origin URL:', url);
+        return url;
       }
-      return baseUrl
+      console.log('Falling back to base URL:', baseUrl);
+      return baseUrl;
     },
-    session: async ({ session }) => {
-      return session
+    session: async ({ session, token }) => {
+      console.log('=== Session Callback Debug ===');
+      console.log('Session data:', {
+        user: session?.user,
+        expires: session?.expires
+      });
+      return session;
     },
     jwt: async ({ token, user, account }) => {
+      console.log('=== JWT Callback Debug ===');
+      console.log('Token payload:', {
+        sub: token.sub,
+        email: token.email,
+        hasAccessToken: !!token.accessToken
+      });
       if (account && user) {
-        token.accessToken = account.access_token
+        console.log('New sign in detected');
+        console.log('Account provider:', account.provider);
+        console.log('Has access token:', !!account.access_token);
+        token.accessToken = account.access_token;
       }
-      return token
+      return token;
     }
   }
 }
