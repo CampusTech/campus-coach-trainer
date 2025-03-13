@@ -6,6 +6,7 @@ import SignInButton from './components/SignInButton'
 
 export default async function Home() {
   const session = await auth()
+  console.log('Yo pots, Session:', session)
 
   if (!session) {
     // Show login UI
