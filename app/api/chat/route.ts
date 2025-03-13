@@ -22,6 +22,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(response.choices[0].message);
   } catch (error) {
-    return NextResponse.json({ error: 'Error processing request' }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : 'Failed to communicate with AI';
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 } 
