@@ -1,15 +1,19 @@
-import { auth } from "./auth"
+'use client'
+
 import Chat from './components/Chat'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useSession } from "next-auth/react"
 import SignInButton from './components/SignInButton'
 
-export default async function Home() {
-  const session = await auth()
-  console.log('Yo pots, Session:', session)
+export default function Home() {
+  const { data: session, status } = useSession()
+
+  if (status === "loading") {
+    return <div>Loading...</div>
+  }
 
   if (!session) {
-    // Show login UI
     return (
       <div className="min-h-screen p-8">
         <main className="max-w-4xl mx-auto">
@@ -20,12 +24,6 @@ export default async function Home() {
         </main>
       </div>
     )
-  }
-
-  // Log user info after authentication
-  if (session?.user) {
-    console.log('User Email:', session.user.email)
-    console.log('User Info:', session.user)
   }
 
   return (
