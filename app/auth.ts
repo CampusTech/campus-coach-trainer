@@ -12,7 +12,12 @@ export const authConfig: AuthOptions = {
   session: {
     strategy: "jwt"
   },
-  secret: process.env.AUTH_SECRET
+  secret: process.env.AUTH_SECRET,
+  callbacks: {
+    redirect({ url, baseUrl }) {
+      return url.startsWith(baseUrl) ? url : baseUrl
+    }
+  }
 }
 
 export const auth = () => getServerSession(authConfig)
