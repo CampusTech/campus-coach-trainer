@@ -31,7 +31,7 @@ export const authConfig: AuthOptions = {
       console.log('Falling back to base URL:', baseUrl);
       return baseUrl;
     },
-    session: async ({ session, token }) => {
+    session: async ({ session }) => {
       console.log('=== Session Callback Debug ===');
       console.log('Session data:', {
         user: session?.user,
