@@ -5,7 +5,14 @@ import Image from 'next/image'
 import SignInButton from './components/SignInButton'
 
 export default async function Home() {
-  const session = await auth()  // This won't force a redirect now
+  const session = await auth()
+
+  if (session?.user?.email) {
+    await fetch(`${process.env.NEXT_PUBLIC_URL}/api/user/update-last-login`, {
+      method: 'POST',
+      body: JSON.stringify({ email: session.user.email })
+    })
+  }
 
   if (!session) {
     return (
