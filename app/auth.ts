@@ -37,7 +37,7 @@ export const authConfig: AuthOptions = {
             image: user.image
           };
 
-          const response = await fetch(`${process.env.NEXTAUTH_URL}/api/auth/save-user`, {
+          const response = await fetch(`${process.env.NEXTAUTH_URL}/api/user/save-user`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
