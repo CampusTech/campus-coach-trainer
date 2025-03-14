@@ -29,6 +29,29 @@ export const authConfig: AuthOptions = {
     },
     jwt: async ({ token, user, account }) => {
       if (account && user) {
+        // Save user to database after successful sign-in
+        try {
+          const userData = {
+            name: user.name,
+            email: user.email,
+            image: user.image
+          };
+
+          const response = await fetch(`${process.env.NEXTAUTH_URL}/api/auth/save-user`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(userData)
+          });
+
+          if (!response.ok) {
+            console.error('Failed to save user:', await response.text());
+          }
+        } catch (error) {
+          console.error('Error saving user:', error);
+        }
+
         return {
           ...token,
           accessToken: account.access_token,
