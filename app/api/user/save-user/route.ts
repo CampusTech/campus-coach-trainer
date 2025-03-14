@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 export async function POST(request: Request) {
   try {
     const userData = await request.json();
-    const { name, email, image } = userData;
+    const { google_id, name, email, image } = userData;
 
     if (!name || !email) {
       return NextResponse.json(
@@ -14,8 +14,9 @@ export async function POST(request: Request) {
     }
 
     await sql`
-      INSERT INTO study_buddy_users (name, email, profile_image)
-      VALUES (${name}, ${email}, ${image})
+      INSERT INTO study_buddy_users (google_id, name, email, profile_image)
+      VALUES (${google_id}, ${name}, ${email}, ${image})
+      ON CONFLICT DO NOTHING
     `;
 
     return NextResponse.json({ message: 'User saved successfully' });

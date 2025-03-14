@@ -34,7 +34,8 @@ export const authConfig: AuthOptions = {
           const userData = {
             name: user.name,
             email: user.email,
-            image: user.image
+            image: user.image,
+            google_id: user.id
           };
 
           const response = await fetch(`${process.env.NEXTAUTH_URL}/api/user/save-user`, {
