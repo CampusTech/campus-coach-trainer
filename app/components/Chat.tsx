@@ -10,14 +10,20 @@ interface Message {
 interface ChatProps {
   email: string;
   googleName: string;
+  preferredName: string | null;
+  lastChatAt: string | null;
 }
 
-export default function Chat({ email, googleName }: ChatProps) {
+export default function Chat({ email, googleName, preferredName, lastChatAt }: ChatProps) {
   const firstName = googleName.split(' ')[0];
+  let initialMessage = `Welcome! I'm your Study Buddy. I have your name as ${firstName}, is that right?`
+  if (lastChatAt) {
+    initialMessage = `Welcome back, ${preferredName ?? firstName}. How can I help you today?`
+  }
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: `Welcome! I'm your Study Buddy. I have your name as ${firstName}, is that right?`
+      content: initialMessage
     }
   ]);
   const [input, setInput] = useState('');
@@ -40,7 +46,8 @@ export default function Chat({ email, googleName }: ChatProps) {
         },
         body: JSON.stringify({
           messages: newMessages,
-          email: email
+          email: email,
+          name: preferredName ?? firstName
         }),
       });
 

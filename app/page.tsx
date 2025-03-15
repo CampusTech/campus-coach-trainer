@@ -7,11 +7,22 @@ import SignInButton from './components/SignInButton'
 export default async function Home() {
   const session = await auth()
 
+  let preferredName = null;
+  let lastChatAt = null;
   if (session?.user?.email) {
     await fetch(`${process.env.NEXT_PUBLIC_URL}/api/user/update-last-login`, {
       method: 'POST',
       body: JSON.stringify({ email: session.user.email })
     })
+
+    const preferredNameResponse = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/user/get-user-details`, {
+      method: 'POST',
+      body: JSON.stringify({ email: session.user.email })
+    })
+
+    const preferredNameData = await preferredNameResponse.json()
+    preferredName = preferredNameData.preferredName
+    lastChatAt = preferredNameData.lastChatAt
   }
 
   if (!session) {
@@ -51,7 +62,7 @@ export default async function Home() {
             </div>
           )}
         </div>
-        <Chat email={session?.user?.email ?? ''} googleName={session?.user?.name ?? ''} />
+        <Chat email={session?.user?.email ?? ''} googleName={session?.user?.name ?? ''} preferredName={preferredName} lastChatAt={lastChatAt} />
       </main>
     </div>
   )

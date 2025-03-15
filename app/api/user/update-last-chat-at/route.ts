@@ -4,7 +4,8 @@ import { NextResponse } from 'next/server';
 export async function POST(request: Request) {
     try {
         const userData = await request.json();
-        const { email, preferredName } = userData;
+        const { email } = userData;
+
         if (!email) {
           return NextResponse.json(
             { error: 'Missing required user data' },
@@ -13,13 +14,13 @@ export async function POST(request: Request) {
         }
         await sql`
             UPDATE study_buddy_users
-            SET preferred_name = ${preferredName}
+            SET last_chat_at = CURRENT_TIMESTAMP
             WHERE email = ${email}
         `;
 
         return NextResponse.json({ success: true })
     } catch (error) {
-        console.error('Failed to update preferred name:', error)
-        return NextResponse.json({ error: "Failed to update preferred name" }, { status: 500 })
+        console.error('Failed to update last login:', error)
+        return NextResponse.json({ error: "Failed to update last login" }, { status: 500 })
     }
 }
