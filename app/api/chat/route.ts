@@ -11,7 +11,7 @@ export async function POST(req: Request) {
 
     const systemMessage = {
       role: "system",
-      content: `You are a helpful AI tutor. User's name is ${name}. Provide clear, concise explanations and guide students through their learning process. If a concept is complex, break it down into simpler parts. Feel free to ask clarifying questions when needed.`
+      content: `You are a helpful AI tutor. Student's name is ${name}. Provide clear, concise explanations and guide students through their learning process. If a concept is complex, break it down into simpler parts. Feel free to ask clarifying questions when needed.`
     };
 
     await fetch(`${process.env.NEXT_PUBLIC_URL}/api/user/update-last-chat-at`, {
@@ -39,7 +39,7 @@ export async function POST(req: Request) {
     };
 
     const initialMessages = [systemMessage, ...messages];
-    console.log('Initial messages sent to OpenAI:', JSON.stringify(initialMessages, null, 2));
+    // console.log('Initial messages sent to OpenAI:', JSON.stringify(initialMessages, null, 2));
 
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
@@ -49,11 +49,11 @@ export async function POST(req: Request) {
       tool_choice: 'auto',
     });
 
-    console.log("OpenAI response: ", JSON.stringify(response.choices[0].message, null, 2));
+    // console.log("OpenAI response: ", JSON.stringify(response.choices[0].message, null, 2));
     const responseMessage = response.choices[0].message;
 
     if (responseMessage.tool_calls) {
-      console.log("Tool calls detected: ", JSON.stringify(responseMessage.tool_calls, null, 2));
+      // console.log("Tool calls detected: ", JSON.stringify(responseMessage.tool_calls, null, 2));
       for (const toolCall of responseMessage.tool_calls) {
         if (toolCall.function.name === 'saveUserPreference') {
           const args = JSON.parse(toolCall.function.arguments);
@@ -79,7 +79,7 @@ export async function POST(req: Request) {
 
           // Make another API call with the function result
           const secondMessages = [...messages, responseMessage, functionResponse];
-          console.log('Second messages sent to OpenAI:', JSON.stringify(secondMessages, null, 2));
+          // console.log('Second messages sent to OpenAI:', JSON.stringify(secondMessages, null, 2));
 
           const secondResponse = await openai.chat.completions.create({
             model: "gpt-3.5-turbo",
@@ -89,7 +89,7 @@ export async function POST(req: Request) {
             tool_choice: 'auto',
           });
 
-          console.log("Second OpenAI response: ", JSON.stringify(secondResponse.choices[0].message, null, 2));
+          // console.log("Second OpenAI response: ", JSON.stringify(secondResponse.choices[0].message, null, 2));
           return NextResponse.json(secondResponse.choices[0].message);
         }
       }
