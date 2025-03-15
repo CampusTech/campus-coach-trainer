@@ -14,7 +14,7 @@ async function updateLastChatTime(email: string) {
 }
 
 async function updateUserPreference(email: string, preferredName: string) {
-  return await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/user/update-preference`, {
+  return await fetch(`${process.env.NEXT_PUBLIC_URL}/api/user/update-preference`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

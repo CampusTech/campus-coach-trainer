@@ -15,7 +15,6 @@ export async function POST(request: Request) {
             SELECT preferred_name, last_chat_at FROM study_buddy_users
             WHERE email = ${email}
         `;
-        console.log("result: ", result)
         return NextResponse.json({ preferredName: result.rows[0].preferred_name, lastChatAt: result.rows[0].last_chat_at })
     } catch (error) {
         console.error('Failed to update preferred name:', error)
