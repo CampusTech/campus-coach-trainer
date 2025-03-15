@@ -1,9 +1,27 @@
 import OpenAI from 'openai';
 import { NextResponse } from 'next/server';
+import { updatePreferenceTool } from './tools';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
+
+async function updateLastChatTime(email: string) {
+  await fetch(`${process.env.NEXT_PUBLIC_URL}/api/user/update-last-chat-at`, {
+    method: 'POST',
+    body: JSON.stringify({ email })
+  });
+}
+
+async function updateUserPreference(email: string, preferredName: string) {
+  return await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/user/update-preference`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email, preferredName })
+  });
+}
 
 export async function POST(req: Request) {
   try {
@@ -14,29 +32,7 @@ export async function POST(req: Request) {
       content: `You are a helpful AI tutor. Student's name is ${name}. Provide clear, concise explanations and guide students through their learning process. If a concept is complex, break it down into simpler parts. Feel free to ask clarifying questions when needed.`
     };
 
-    await fetch(`${process.env.NEXT_PUBLIC_URL}/api/user/update-last-chat-at`, {
-      method: 'POST',
-      body: JSON.stringify({ email })
-    })
-
-    // Define the function tool for updating user preferences
-    const updatePreferenceTool = {
-      type: 'function' as const,
-      function: {
-        name: 'saveUserPreference',
-        description: 'Stores the user\'s preferred name',
-        parameters: {
-          type: 'object',
-          properties: {
-            preferredName: {
-              type: 'string',
-              description: 'The user\'s preferred name'
-            }
-          },
-          required: ['preferredName']
-        }
-      }
-    };
+    await updateLastChatTime(email);
 
     const initialMessages = [systemMessage, ...messages];
     // console.log('Initial messages sent to OpenAI:', JSON.stringify(initialMessages, null, 2));
@@ -57,17 +53,7 @@ export async function POST(req: Request) {
       for (const toolCall of responseMessage.tool_calls) {
         if (toolCall.function.name === 'saveUserPreference') {
           const args = JSON.parse(toolCall.function.arguments);
-          // Call the update preference API route
-          const result = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/user/update-preference`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              email,
-              preferredName: args.preferredName
-            })
-          });
+          const result = await updateUserPreference(email, args.preferredName);
 
           // Add the function response to messages
           const functionResponse = {
