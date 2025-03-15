@@ -7,8 +7,19 @@ interface Message {
   content: string;
 }
 
-export default function Chat() {
-  const [messages, setMessages] = useState<Message[]>([]);
+interface ChatProps {
+  email: string;
+  googleName: string;
+}
+
+export default function Chat({ email, googleName }: ChatProps) {
+  const firstName = googleName.split(' ')[0];
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      role: 'assistant',
+      content: `Welcome! I'm your Study Buddy. I have your name as ${firstName}, is that right?`
+    }
+  ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -27,7 +38,10 @@ export default function Chat() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ messages: newMessages }),
+        body: JSON.stringify({
+          messages: newMessages,
+          email: email
+        }),
       });
 
       const data = await response.json();
@@ -82,4 +96,4 @@ export default function Chat() {
       </form>
     </div>
   );
-} 
+}

@@ -31,7 +31,7 @@ export default async function Home() {
     <div className="min-h-screen p-8">
       <main className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold">AI Tutor Chat</h1>
+          <h1 className="text-2xl font-bold">Chat with your Study Buddy</h1>
           {session?.user && (
             <div className="flex items-center gap-2">
               <Image
@@ -51,7 +51,7 @@ export default async function Home() {
             </div>
           )}
         </div>
-        <Chat />
+        <Chat email={session?.user?.email ?? ''} googleName={session?.user?.name ?? ''} />
       </main>
     </div>
   )
