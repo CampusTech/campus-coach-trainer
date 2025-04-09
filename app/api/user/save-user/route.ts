@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     }
 
     await sql`
-      INSERT INTO study_buddy_users (google_id, name, email, profile_image)
+      INSERT INTO coach_trainer_users (google_id, name, email, profile_image)
       VALUES (${google_id}, ${name}, ${email}, ${image})
       ON CONFLICT DO NOTHING
     `;

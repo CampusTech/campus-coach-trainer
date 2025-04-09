@@ -13,7 +13,7 @@ export async function POST(request: Request) {
           );
         }
         await sql`
-            UPDATE study_buddy_users
+            UPDATE coach_trainer_users
             SET last_login_at = CURRENT_TIMESTAMP
             WHERE email = ${email}
         `;
