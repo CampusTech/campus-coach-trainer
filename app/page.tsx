@@ -30,7 +30,7 @@ export default async function Home() {
       <div className="min-h-screen p-8">
         <main className="max-w-4xl mx-auto">
           <div className="flex flex-col items-center justify-center gap-4">
-            <h1 className="text-2xl font-bold">Welcome to Campus Study Buddy</h1>
+            <h1 className="text-2xl font-bold">Welcome to Campus Coach Trainer</h1>
             <SignInButton />
           </div>
         </main>
@@ -42,7 +42,7 @@ export default async function Home() {
     <div className="min-h-screen p-8">
       <main className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold">Chat with your Study Buddy</h1>
+          <h1 className="text-2xl font-bold">Chat with your Coach Trainer</h1>
           {session?.user && (
             <div className="flex items-center gap-2">
               <Image
