@@ -26,7 +26,7 @@ export default async function Home() {
     <div className="min-h-screen p-8">
       <main className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold">Chat with your Coach Trainer</h1>
+          <h1 className="text-2xl font-bold">Practice a conversation with a student</h1>
           {session?.user && (
             <div className="flex items-center gap-2">
               <Image

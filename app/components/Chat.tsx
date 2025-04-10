@@ -95,11 +95,11 @@ export default function Chat() {
       setSelectedAgentConfigSet(agents);
     }, [searchParams]);
 
-    useEffect(() => {
-      if (selectedAgentName && sessionStatus === "DISCONNECTED") {
-        connectToRealtime();
-      }
-    }, [selectedAgentName]);
+    // useEffect(() => {
+    //   if (selectedAgentName && sessionStatus === "DISCONNECTED") {
+    //     connectToRealtime();
+    //   }
+    // }, [selectedAgentName]);
 
     useEffect(() => {
       if (
@@ -410,7 +410,7 @@ export default function Chat() {
 
 
     return (
-      <div className="text-base flex flex-col h-screen bg-gray-100 text-gray-800 relative">
+      <div style={{ height: '80vh' }} className="text-base flex flex-col bg-gray-100 text-gray-800 relative">
         <div className="p-5 text-lg font-semibold flex justify-between items-center">
           <div className="flex items-center">
             <div onClick={() => window.location.reload()} style={{ cursor: 'pointer' }}>
@@ -465,7 +465,7 @@ export default function Chat() {
                   </select>
                   <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-gray-600">
                     <svg
-                      className="h-4 w-4"
+                      className="h-8 w-8"
                       viewBox="0 0 20 20"
                       fill="currentColor"
                     >
