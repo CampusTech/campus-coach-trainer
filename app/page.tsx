@@ -48,7 +48,7 @@ export default async function Home() {
         </div>
         <TranscriptProvider>
           <EventProvider>
-            <Chat email={session?.user?.email ?? ''} googleName={session?.user?.name ?? ''} />
+            <Chat />
           </EventProvider>
         </TranscriptProvider>
       </main>

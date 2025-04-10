@@ -99,7 +99,7 @@ export interface ServerEvent {
 }
 
 export interface LoggedEvent {
-  id: number;
+  id: string;
   direction: "client" | "server";
   expanded: boolean;
   timestamp: string;

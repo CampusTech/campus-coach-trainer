@@ -21,12 +21,14 @@ import { createRealtimeConnection } from "@/app/lib/realtimeConnection";
 import { allAgentSets, defaultAgentSetKey } from "@/app/agentConfigs";
 import { useSearchParams } from "next/navigation";
 import { v4 as uuidv4 } from 'uuid';
-interface ChatProps {
-  email: string;
-  googleName: string;
+
+interface EventObject {
+  type: string;
+  // Add other properties as needed
+  [key: string]: unknown; // Use unknown instead of any
 }
 
-export default function Chat({ email, googleName }: ChatProps) {
+export default function Chat() {
   const searchParams = useSearchParams();
 
   const { transcriptItems, addTranscriptMessage, addTranscriptBreadcrumb } =
@@ -52,7 +54,7 @@ export default function Chat({ email, googleName }: ChatProps) {
   const [isAudioPlaybackEnabled, setIsAudioPlaybackEnabled] =
     useState<boolean>(true);
 
-    const sendClientEvent = (eventObj: any, eventNameSuffix = "") => {
+    const sendClientEvent = (eventObj: EventObject, eventNameSuffix = "") => {
       if (dcRef.current && dcRef.current.readyState === "open") {
         logClientEvent(eventObj, eventNameSuffix);
         dcRef.current.send(JSON.stringify(eventObj));
@@ -169,7 +171,7 @@ export default function Chat({ email, googleName }: ChatProps) {
         dc.addEventListener("close", () => {
           logClientEvent({}, "data_channel.close");
         });
-        dc.addEventListener("error", (err: any) => {
+        dc.addEventListener("error", (err: RTCErrorEvent) => {
           logClientEvent({ error: err }, "data_channel.error");
         });
         dc.addEventListener("message", (e: MessageEvent) => {
