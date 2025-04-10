@@ -235,6 +235,12 @@ export default function Chat() {
         (a) => a.name === selectedAgentName
       );
 
+      if (!currentAgent) {
+        console.warn("No current agent found for the selected agent name.");
+      } else {
+        console.log("Current Agent Instructions:", currentAgent.instructions);
+      }
+
       const turnDetection = isPTTActive
         ? null
         : {
@@ -247,6 +253,8 @@ export default function Chat() {
 
       const instructions = currentAgent?.instructions || "";
       const tools = currentAgent?.tools || [];
+
+      console.log("Session Update Event Instructions:", instructions);
 
       const sessionUpdateEvent = {
         type: "session.update",
@@ -265,6 +273,7 @@ export default function Chat() {
       sendClientEvent(sessionUpdateEvent);
 
       if (shouldTriggerResponse) {
+        console.log("Triggering simulated user message.");
         sendSimulatedUserMessage("hi");
       }
     };
