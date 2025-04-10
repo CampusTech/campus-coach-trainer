@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-
+import { useState, useRef, useEffect } from 'react';
+import { createRealtimeConnection } from '../lib/realtimeConnection';
+import { fetchEphemeralKey } from '../lib/fetchEphemeralKey';
 interface Message {
   role: 'user' | 'assistant';
   content: string;
@@ -10,55 +11,92 @@ interface Message {
 interface ChatProps {
   email: string;
   googleName: string;
-  preferredName: string | null;
-  lastChatAt: string | null;
 }
 
-export default function Chat({ email, googleName, preferredName, lastChatAt }: ChatProps) {
+export default function Chat({ email, googleName }: ChatProps) {
   const firstName = googleName.split(' ')[0];
-  let initialMessage = `Welcome! I'm your Study Buddy. I have your name as ${firstName}, is that right?`
-  if (lastChatAt) {
-    initialMessage = `Welcome back, ${preferredName ?? firstName}. How can I help you today?`
-  }
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: 'assistant',
-      content: initialMessage
-    }
-  ]);
-  const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isRecording, setIsRecording] = useState(false);
+  const audioElementRef = useRef<HTMLAudioElement | null>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const [dataChannel, setDataChannel] = useState<RTCDataChannel | null>(null);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!input.trim()) return;
+  useEffect(() => {
+    const setupConnection = async () => {
+      const EPHEMERAL_KEY = await fetchEphemeralKey();
+      if (!EPHEMERAL_KEY) {
+        return;
+      }
 
-    const newMessages = [...messages, { role: 'user' as const, content: input }];
-    setMessages(newMessages);
-    setInput('');
-    setIsLoading(true);
+      const { pc, dc } = await createRealtimeConnection(EPHEMERAL_KEY, audioElementRef);
+      setDataChannel(dc);
 
-    try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          messages: newMessages,
-          email: email,
-          name: preferredName ?? firstName
-        }),
+      dc.addEventListener('message', (event) => {
+        const message = JSON.parse(event.data);
+        if (message.type === 'audio') {
+          playAudioResponse(message.audioUrl);
+        } else {
+          setMessages((prevMessages) => [...prevMessages, message]);
+        }
       });
+    };
 
-      const data = await response.json();
-      setMessages([...newMessages, data]);
-    } catch (error) {
-      console.error('Error:', error);
-    } finally {
-      setIsLoading(false);
+    setupConnection();
+  }, []);
+
+  useEffect(() => {
+    if (!('webkitSpeechRecognition' in window)) {
+      console.error('Web Speech API is not supported in this browser.');
+      return;
     }
-  }
+
+    const recognition = new (window as any).webkitSpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      const transcript = event.results[0][0].transcript;
+      handleVoiceInput(transcript);
+    };
+
+    recognition.onerror = (event: ErrorEvent) => {
+      console.error('Speech recognition error:', event.error);
+    };
+
+    recognitionRef.current = recognition;
+  }, []);
+
+  const handleVoiceInput = (transcript: string) => {
+    if (dataChannel && dataChannel.readyState === 'open') {
+      dataChannel.send(JSON.stringify({ type: 'text', content: transcript }));
+      setMessages([...messages, { role: 'user', content: transcript }]);
+    }
+  };
+
+  const startRecording = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.start();
+      setIsRecording(true);
+    }
+  };
+
+  const stopRecording = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsRecording(false);
+    }
+  };
+
+  const playAudioResponse = (audioUrl: string) => {
+    if (!audioElementRef.current) {
+      audioElementRef.current = new Audio();
+    }
+    audioElementRef.current.src = audioUrl;
+    audioElementRef.current.play().catch((err) => {
+      console.warn('Audio playback failed:', err);
+    });
+  };
 
   return (
     <div className="w-full max-w-2xl mx-auto">
@@ -81,26 +119,18 @@ export default function Chat({ email, googleName, preferredName, lastChatAt }: C
             </div>
           </div>
         ))}
-        {isLoading && (
-          <div className="text-center text-gray-500">AI is thinking...</div>
-        )}
       </div>
-      <form onSubmit={handleSubmit} className="flex gap-2">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          className="flex-1 p-2 border rounded"
-          placeholder="Ask your question..."
-        />
+      <div className="flex gap-2">
         <button
-          type="submit"
-          disabled={isLoading}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+          onMouseDown={startRecording}
+          onMouseUp={stopRecording}
+          className={`px-4 py-2 rounded ${
+            isRecording ? 'bg-red-500' : 'bg-blue-500'
+          } text-white`}
         >
-          Send
+          {isRecording ? 'Recording...' : 'Hold to Talk'}
         </button>
-      </form>
+      </div>
     </div>
   );
 }

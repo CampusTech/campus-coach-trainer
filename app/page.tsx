@@ -1,29 +1,88 @@
+'use client';
+
+import { useState, useEffect, useRef } from 'react';
 import { auth } from "./auth"
 import Chat from './components/Chat'
 import Link from 'next/link'
 import Image from 'next/image'
 import SignInButton from './components/SignInButton'
+import { createRealtimeConnection } from './lib/realtimeConnection';
+import { fetchEphemeralKey } from './lib/fetchEphemeralKey';
+import { Session, SessionStatus } from "@/app/types";
 
-export default async function Home() {
-  const session = await auth()
+export default function Home() {
+  const [session, setSession] = useState<Session | null>(null);
+  const [sessionStatus, setSessionStatus] = useState<SessionStatus>("DISCONNECTED");
+  const audioElementRef = useRef<HTMLAudioElement | null>(null);
 
-  let preferredName = null;
-  let lastChatAt = null;
-  if (session?.user?.email) {
-    await fetch(`${process.env.NEXT_PUBLIC_URL}/api/user/update-last-login`, {
-      method: 'POST',
-      body: JSON.stringify({ email: session.user.email })
-    })
+  useEffect(() => {
+    const authenticate = async () => {
+      const response = await fetch('/api/auth/google', {
+        method: 'POST',
+        // Include any necessary headers or body data
+      });
 
-    const preferredNameResponse = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/user/get-user-details`, {
-      method: 'POST',
-      body: JSON.stringify({ email: session.user.email })
-    })
+      if (response.ok) {
+        console.log('Authenticated successfully');
+      } else {
+        console.error('Failed to authenticate');
+      }
+    };
 
-    const preferredNameData = await preferredNameResponse.json()
-    preferredName = preferredNameData.preferredName
-    lastChatAt = preferredNameData.lastChatAt
-  }
+    authenticate();
+  }, []);
+
+  useEffect(() => {
+    const fetchSession = async () => {
+      try {
+        const response = await fetch('/api/clientsession');
+        if (response.ok) {
+          const session = await response.json();
+          setSession(session);
+        } else {
+          console.error('Failed to fetch session');
+        }
+      } catch (error) {
+        console.error('Error fetching session:', error);
+      }
+    };
+
+    fetchSession();
+  }, []);
+
+  const startRoleplay = async () => {
+    if (sessionStatus !== "DISCONNECTED") return;
+    setSessionStatus("CONNECTING");
+
+    try {
+      const EPHEMERAL_KEY = await fetchEphemeralKey();
+      if (!EPHEMERAL_KEY) {
+        return;
+      }
+
+      if (!audioElementRef.current) {
+        audioElementRef.current = document.createElement("audio");
+      }
+      audioElementRef.current.autoplay = true;
+
+      const { pc, dc } = await createRealtimeConnection(
+        EPHEMERAL_KEY,
+        audioElementRef
+      );
+
+      dc.addEventListener("open", () => {
+        dc.send(JSON.stringify({
+          type: "start",
+          prompt: "You are playing the part of a student who is having trouble with their algebra homework."
+        }));
+      });
+
+      setSessionStatus("CONNECTED");
+    } catch (err) {
+      console.error("Error connecting to realtime:", err);
+      setSessionStatus("DISCONNECTED");
+    }
+  };
 
   if (!session) {
     return (
@@ -62,7 +121,10 @@ export default async function Home() {
             </div>
           )}
         </div>
-        <Chat email={session?.user?.email ?? ''} googleName={session?.user?.name ?? ''} preferredName={preferredName} lastChatAt={lastChatAt} />
+        <button onClick={startRoleplay} className="btn btn-primary">
+          Start roleplay
+        </button>
+        <Chat email={session?.user?.email ?? ''} googleName={session?.user?.name ?? ''} />
       </main>
     </div>
   )
