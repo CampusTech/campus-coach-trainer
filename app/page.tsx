@@ -3,27 +3,11 @@ import Chat from './components/Chat'
 import Link from 'next/link'
 import Image from 'next/image'
 import SignInButton from './components/SignInButton'
+import { EventProvider } from "./contexts/EventContext"
+import { TranscriptProvider } from "./contexts/TranscriptContext"
 
 export default async function Home() {
   const session = await auth()
-
-  let preferredName = null;
-  let lastChatAt = null;
-  if (session?.user?.email) {
-    await fetch(`${process.env.NEXT_PUBLIC_URL}/api/user/update-last-login`, {
-      method: 'POST',
-      body: JSON.stringify({ email: session.user.email })
-    })
-
-    const preferredNameResponse = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/user/get-user-details`, {
-      method: 'POST',
-      body: JSON.stringify({ email: session.user.email })
-    })
-
-    const preferredNameData = await preferredNameResponse.json()
-    preferredName = preferredNameData.preferredName
-    lastChatAt = preferredNameData.lastChatAt
-  }
 
   if (!session) {
     return (
@@ -62,7 +46,11 @@ export default async function Home() {
             </div>
           )}
         </div>
-        <Chat email={session?.user?.email ?? ''} googleName={session?.user?.name ?? ''} preferredName={preferredName} lastChatAt={lastChatAt} />
+        <TranscriptProvider>
+          <EventProvider>
+            <Chat email={session?.user?.email ?? ''} googleName={session?.user?.name ?? ''} />
+          </EventProvider>
+        </TranscriptProvider>
       </main>
     </div>
   )
