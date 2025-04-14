@@ -42,7 +42,7 @@ function Events({ isExpanded }: EventsProps) {
       {isExpanded && (
         <div>
           <div className="font-semibold px-6 py-4 sticky top-0 z-10 text-base border-b bg-white">
-            Logs
+            Debugging Logs
           </div>
           <div>
             {loggedEvents.map((log) => {
