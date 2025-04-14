@@ -274,7 +274,7 @@ export default function Chat() {
 
       if (shouldTriggerResponse) {
         console.log("Triggering simulated user message.");
-        sendSimulatedUserMessage("hi");
+        sendSimulatedUserMessage("Hey, it's Potluck here - your coach. What can I help you with today?");
       }
     };
 
