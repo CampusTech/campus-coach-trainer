@@ -28,7 +28,7 @@ interface EventObject {
   [key: string]: unknown; // Use unknown instead of any
 }
 
-export default function Chat() {
+export default function Chat({ firstName }: { firstName: string }) {
   const searchParams = useSearchParams();
 
   const { transcriptItems, addTranscriptMessage, addTranscriptBreadcrumb } =
@@ -89,6 +89,7 @@ export default function Chat() {
 
       const agents = allAgentSets[finalAgentConfig];
       const agentKeyToUse = agents[0]?.name || "";
+      // const agentKeyToUse = "random";
 
       setSelectedAgentName(agentKeyToUse);
       setSelectedAgentConfigSet(agents);
@@ -106,9 +107,15 @@ export default function Chat() {
         selectedAgentConfigSet &&
         selectedAgentName
       ) {
-        const currentAgent = selectedAgentConfigSet.find(
-          (a) => a.name === selectedAgentName
-        );
+        let currentAgent;
+        if (selectedAgentName === "random-scenario") {
+          const randomIndex = Math.floor(Math.random() * (selectedAgentConfigSet.length - 1));
+          currentAgent = selectedAgentConfigSet[randomIndex + 1];
+        } else {
+          currentAgent = selectedAgentConfigSet.find(
+            (a) => a.name === selectedAgentName
+          );
+        }
         addTranscriptBreadcrumb(
           `Agent: ${selectedAgentName}`,
           currentAgent
@@ -230,9 +237,15 @@ export default function Chat() {
         "clear audio buffer on session update"
       );
 
-      const currentAgent = selectedAgentConfigSet?.find(
-        (a) => a.name === selectedAgentName
-      );
+      let currentAgent;
+      if (selectedAgentName === "random-scenario" && selectedAgentConfigSet) {
+        const randomIndex = Math.floor(Math.random() * (selectedAgentConfigSet.length - 1));
+        currentAgent = selectedAgentConfigSet[randomIndex + 1];
+      } else {
+        currentAgent = selectedAgentConfigSet?.find(
+          (a) => a.name === selectedAgentName
+        );
+      }
 
       if (!currentAgent) {
         console.warn("No current agent found for the selected agent name.");
@@ -273,7 +286,7 @@ export default function Chat() {
 
       if (shouldTriggerResponse) {
         console.log("Triggering simulated user message.");
-        sendSimulatedUserMessage("Hey, it's Potluck here - your coach. What can I help you with today?");
+        sendSimulatedUserMessage("Hey, it's " + firstName + " here - your coach. What can I help you with today?");
       }
     };
 
@@ -354,12 +367,12 @@ export default function Chat() {
       }
     };
 
-    const handleAgentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const newAgentConfig = e.target.value;
-      const url = new URL(window.location.toString());
-      url.searchParams.set("agentConfig", newAgentConfig);
-      window.location.replace(url.toString());
-    };
+    // const handleAgentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    //   const newAgentConfig = e.target.value;
+    //   const url = new URL(window.location.toString());
+    //   url.searchParams.set("agentConfig", newAgentConfig);
+    //   window.location.replace(url.toString());
+    // };
 
     const handleSelectedAgentChange = (
       e: React.ChangeEvent<HTMLSelectElement>
@@ -428,11 +441,11 @@ export default function Chat() {
             <div onClick={() => window.location.reload()} style={{ cursor: 'pointer' }}>
             </div>
             <div>
-              Realtime API <span className="text-gray-500">Agents</span>
+              Practice a conversation with a student
             </div>
           </div>
           <div className="flex items-center">
-            <label className="flex items-center text-base gap-1 mr-2 font-medium">
+            {/*<label className="flex items-center text-base gap-1 mr-2 font-medium">
               Scenario
             </label>
             <div className="relative inline-block">
@@ -456,12 +469,12 @@ export default function Chat() {
                   />
                 </svg>
               </div>
-            </div>
+            </div> */}
 
             {agentSetKey && (
               <div className="flex items-center ml-6">
                 <label className="flex items-center text-base gap-1 mr-2 font-medium">
-                  Agent
+                  Scenario
                 </label>
                 <div className="relative inline-block">
                   <select

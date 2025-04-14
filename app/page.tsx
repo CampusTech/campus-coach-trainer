@@ -26,7 +26,7 @@ export default async function Home() {
     <div className="min-h-screen p-8">
       <main className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold">Practice a conversation with a student</h1>
+          <h1 className="text-2xl font-bold"></h1>
           {session?.user && (
             <div className="flex items-center gap-2">
               <Image
@@ -48,7 +48,8 @@ export default async function Home() {
         </div>
         <TranscriptProvider>
           <EventProvider>
-            <Chat />
+            <Chat firstName={session?.user?.name?.split(' ')[0] ?? 'Coach'} />
+            {/* <Chat firstName="Mary" /> */}
           </EventProvider>
         </TranscriptProvider>
       </main>
