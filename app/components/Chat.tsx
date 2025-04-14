@@ -52,8 +52,6 @@ export default function Chat() {
   const [userText, setUserText] = useState<string>("");
   const [isPTTActive, setIsPTTActive] = useState<boolean>(false);
   const [isPTTUserSpeaking, setIsPTTUserSpeaking] = useState<boolean>(false);
-  const [isAudioPlaybackEnabled, setIsAudioPlaybackEnabled] =
-    useState<boolean>(true);
 
     const sendClientEvent = (eventObj: EventObject, eventNameSuffix = "") => {
       if (dcRef.current && dcRef.current.readyState === "open") {
@@ -157,7 +155,7 @@ export default function Chat() {
         if (!audioElementRef.current) {
           audioElementRef.current = document.createElement("audio");
         }
-        audioElementRef.current.autoplay = isAudioPlaybackEnabled;
+        audioElementRef.current.autoplay = true;
 
         const { pc, dc } = await createRealtimeConnection(
           EPHEMERAL_KEY,
@@ -383,12 +381,6 @@ export default function Chat() {
       if (storedTranscriptVisible) {
         setIsTranscriptVisible(storedTranscriptVisible === "true");
       }
-      const storedAudioPlaybackEnabled = localStorage.getItem(
-        "audioPlaybackEnabled"
-      );
-      if (storedAudioPlaybackEnabled) {
-        setIsAudioPlaybackEnabled(storedAudioPlaybackEnabled === "true");
-      }
     }, []);
 
     useEffect(() => {
@@ -404,23 +396,12 @@ export default function Chat() {
     }, [isTranscriptVisible]);
 
     useEffect(() => {
-      localStorage.setItem(
-        "audioPlaybackEnabled",
-        isAudioPlaybackEnabled.toString()
-      );
-    }, [isAudioPlaybackEnabled]);
-
-    useEffect(() => {
       if (audioElementRef.current) {
-        if (isAudioPlaybackEnabled) {
-          audioElementRef.current.play().catch((err) => {
-            console.warn("Autoplay may be blocked by browser:", err);
-          });
-        } else {
-          audioElementRef.current.pause();
-        }
+        audioElementRef.current.play().catch((err) => {
+          console.warn("Autoplay may be blocked by browser:", err);
+        });
       }
-    }, [isAudioPlaybackEnabled]);
+    }, []);
 
     const agentSetKey = "default";
 
@@ -434,7 +415,7 @@ export default function Chat() {
               "Waiting to connect..."}
           </div>
           {sessionStatus === "CONNECTED" && isPTTActive && (
-            <div className="mt-4 text-sm text-gray-600">Press the "Talk" button to speak</div>
+            <div className="mt-4 text-sm text-gray-600">Press the Talk button to speak</div>
           )}
         </div>
       </div>
@@ -543,8 +524,6 @@ export default function Chat() {
           setIsEventsPaneExpanded={setIsEventsPaneExpanded}
           isTranscriptVisible={isTranscriptVisible}
           setIsTranscriptVisible={setIsTranscriptVisible}
-          isAudioPlaybackEnabled={isAudioPlaybackEnabled}
-          setIsAudioPlaybackEnabled={setIsAudioPlaybackEnabled}
         />
       </div>
     );

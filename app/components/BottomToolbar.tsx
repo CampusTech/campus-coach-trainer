@@ -13,8 +13,6 @@ interface BottomToolbarProps {
   setIsEventsPaneExpanded: (val: boolean) => void;
   isTranscriptVisible: boolean;
   setIsTranscriptVisible: (val: boolean) => void;
-  isAudioPlaybackEnabled: boolean;
-  setIsAudioPlaybackEnabled: (val: boolean) => void;
 }
 
 function BottomToolbar({
@@ -29,8 +27,6 @@ function BottomToolbar({
   setIsEventsPaneExpanded,
   isTranscriptVisible,
   setIsTranscriptVisible,
-  isAudioPlaybackEnabled,
-  setIsAudioPlaybackEnabled,
 }: BottomToolbarProps) {
   const isConnected = sessionStatus === "CONNECTED";
   const isConnecting = sessionStatus === "CONNECTING";
@@ -89,20 +85,6 @@ function BottomToolbar({
         >
           Talk
         </button>
-      </div>
-
-      <div className="flex flex-row items-center gap-2">
-        <input
-          id="audio-playback"
-          type="checkbox"
-          checked={isAudioPlaybackEnabled}
-          onChange={e => setIsAudioPlaybackEnabled(e.target.checked)}
-          disabled={!isConnected}
-          className="w-4 h-4"
-        />
-        <label htmlFor="audio-playback" className="flex items-center cursor-pointer">
-          Audio playback
-        </label>
       </div>
 
       <div className="flex flex-row items-center gap-2">
