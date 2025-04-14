@@ -11,6 +11,8 @@ interface BottomToolbarProps {
   handleTalkButtonUp: () => void;
   isEventsPaneExpanded: boolean;
   setIsEventsPaneExpanded: (val: boolean) => void;
+  isTranscriptVisible: boolean;
+  setIsTranscriptVisible: (val: boolean) => void;
   isAudioPlaybackEnabled: boolean;
   setIsAudioPlaybackEnabled: (val: boolean) => void;
 }
@@ -25,6 +27,8 @@ function BottomToolbar({
   handleTalkButtonUp,
   isEventsPaneExpanded,
   setIsEventsPaneExpanded,
+  isTranscriptVisible,
+  setIsTranscriptVisible,
   isAudioPlaybackEnabled,
   setIsAudioPlaybackEnabled,
 }: BottomToolbarProps) {
@@ -98,6 +102,19 @@ function BottomToolbar({
         />
         <label htmlFor="audio-playback" className="flex items-center cursor-pointer">
           Audio playback
+        </label>
+      </div>
+
+      <div className="flex flex-row items-center gap-2">
+        <input
+          id="transcript"
+          type="checkbox"
+          checked={isTranscriptVisible}
+          onChange={e => setIsTranscriptVisible(e.target.checked)}
+          className="w-4 h-4"
+        />
+        <label htmlFor="transcript" className="flex items-center cursor-pointer">
+          Transcript
         </label>
       </div>
 

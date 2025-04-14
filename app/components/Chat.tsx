@@ -48,6 +48,7 @@ export default function Chat() {
 
   const [isEventsPaneExpanded, setIsEventsPaneExpanded] =
     useState<boolean>(true);
+  const [isTranscriptVisible, setIsTranscriptVisible] = useState<boolean>(false);
   const [userText, setUserText] = useState<string>("");
   const [isPTTActive, setIsPTTActive] = useState<boolean>(false);
   const [isPTTUserSpeaking, setIsPTTUserSpeaking] = useState<boolean>(false);
@@ -378,6 +379,10 @@ export default function Chat() {
       if (storedLogsExpanded) {
         setIsEventsPaneExpanded(storedLogsExpanded === "true");
       }
+      const storedTranscriptVisible = localStorage.getItem("transcriptVisible");
+      if (storedTranscriptVisible) {
+        setIsTranscriptVisible(storedTranscriptVisible === "true");
+      }
       const storedAudioPlaybackEnabled = localStorage.getItem(
         "audioPlaybackEnabled"
       );
@@ -393,6 +398,10 @@ export default function Chat() {
     useEffect(() => {
       localStorage.setItem("logsExpanded", isEventsPaneExpanded.toString());
     }, [isEventsPaneExpanded]);
+
+    useEffect(() => {
+      localStorage.setItem("transcriptVisible", isTranscriptVisible.toString());
+    }, [isTranscriptVisible]);
 
     useEffect(() => {
       localStorage.setItem(
@@ -415,8 +424,21 @@ export default function Chat() {
 
     const agentSetKey = "default";
 
-
-
+    const CallInProgressMessage = () => (
+      <div className="flex-1 flex items-center justify-center bg-white rounded-xl">
+        <div className="text-center p-8">
+          <div className="text-2xl font-semibold mb-2">Call status:</div>
+          <div className="text-gray-500">
+            {sessionStatus === "CONNECTED" ?
+              "Your conversation with " + selectedAgentName + " is active" :
+              "Waiting to connect..."}
+          </div>
+          {sessionStatus === "CONNECTED" && isPTTActive && (
+            <div className="mt-4 text-sm text-gray-600">Press the "Talk" button to speak</div>
+          )}
+        </div>
+      </div>
+    );
 
     return (
       <div style={{ height: '80vh' }} className="text-base flex flex-col bg-gray-100 text-gray-800 relative">
@@ -492,17 +514,21 @@ export default function Chat() {
         </div>
 
         <div className="flex flex-1 gap-2 px-2 overflow-hidden relative">
-          <Transcript
-            userText={userText}
-            setUserText={setUserText}
-            onSendMessage={handleSendTextMessage}
-            canSend={
-              sessionStatus === "CONNECTED" &&
-              dcRef.current?.readyState === "open"
-            }
-          />
+          {isTranscriptVisible ? (
+            <Transcript
+              userText={userText}
+              setUserText={setUserText}
+              onSendMessage={handleSendTextMessage}
+              canSend={
+                sessionStatus === "CONNECTED" &&
+                dcRef.current?.readyState === "open"
+              }
+            />
+          ) : (
+            <CallInProgressMessage />
+          )}
 
-          <Events isExpanded={isEventsPaneExpanded} />
+          {isEventsPaneExpanded && <Events isExpanded={isEventsPaneExpanded} />}
         </div>
 
         <BottomToolbar
@@ -515,6 +541,8 @@ export default function Chat() {
           handleTalkButtonUp={handleTalkButtonUp}
           isEventsPaneExpanded={isEventsPaneExpanded}
           setIsEventsPaneExpanded={setIsEventsPaneExpanded}
+          isTranscriptVisible={isTranscriptVisible}
+          setIsTranscriptVisible={setIsTranscriptVisible}
           isAudioPlaybackEnabled={isAudioPlaybackEnabled}
           setIsAudioPlaybackEnabled={setIsAudioPlaybackEnabled}
         />
