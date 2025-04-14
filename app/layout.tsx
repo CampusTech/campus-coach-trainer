@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Campus Study Buddy",
-  description: "A study buddy for Campus students",
+  title: "Campus Coach Trainer",
+  description: "A roleplaying agent for Campus staff to practice difficult conversations",
 };
 
 export default function RootLayout({
