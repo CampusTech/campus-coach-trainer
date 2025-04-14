@@ -4,11 +4,11 @@ import { SessionStatus } from "../types";
 interface BottomToolbarProps {
   sessionStatus: SessionStatus;
   onToggleConnection: () => void;
-  isPTTActive: boolean;
-  setIsPTTActive: (val: boolean) => void;
-  isPTTUserSpeaking: boolean;
-  handleTalkButtonDown: () => void;
-  handleTalkButtonUp: () => void;
+  // isPTTActive: boolean;
+  // setIsPTTActive: (val: boolean) => void;
+  // isPTTUserSpeaking: boolean;
+  // handleTalkButtonDown: () => void;
+  // handleTalkButtonUp: () => void;
   isEventsPaneExpanded: boolean;
   setIsEventsPaneExpanded: (val: boolean) => void;
   isTranscriptVisible: boolean;
@@ -18,11 +18,11 @@ interface BottomToolbarProps {
 function BottomToolbar({
   sessionStatus,
   onToggleConnection,
-  isPTTActive,
-  setIsPTTActive,
-  isPTTUserSpeaking,
-  handleTalkButtonDown,
-  handleTalkButtonUp,
+  // isPTTActive,
+  // setIsPTTActive,
+  // isPTTUserSpeaking,
+  // handleTalkButtonDown,
+  // handleTalkButtonUp,
   isEventsPaneExpanded,
   setIsEventsPaneExpanded,
   isTranscriptVisible,
@@ -59,7 +59,7 @@ function BottomToolbar({
         {getConnectionButtonLabel()}
       </button>
 
-      <div className="flex flex-row items-center gap-2">
+      {/* <div className="flex flex-row items-center gap-2">
         <input
           id="push-to-talk"
           type="checkbox"
@@ -85,7 +85,7 @@ function BottomToolbar({
         >
           Talk
         </button>
-      </div>
+      </div> */}
 
       <div className="flex flex-row items-center gap-2">
         <input

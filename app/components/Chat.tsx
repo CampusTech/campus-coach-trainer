@@ -39,7 +39,7 @@ export default function Chat({ firstName }: { firstName: string }) {
   const [selectedAgentConfigSet, setSelectedAgentConfigSet] =
     useState<AgentConfig[] | null>(null);
 
-  const [dataChannel, setDataChannel] = useState<RTCDataChannel | null>(null);
+  // const [dataChannel, setDataChannel] = useState<RTCDataChannel | null>(null);
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const dcRef = useRef<RTCDataChannel | null>(null);
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
@@ -50,8 +50,8 @@ export default function Chat({ firstName }: { firstName: string }) {
     useState<boolean>(true);
   const [isTranscriptVisible, setIsTranscriptVisible] = useState<boolean>(false);
   const [userText, setUserText] = useState<string>("");
-  const [isPTTActive, setIsPTTActive] = useState<boolean>(false);
-  const [isPTTUserSpeaking, setIsPTTUserSpeaking] = useState<boolean>(false);
+  // const [isPTTActive, setIsPTTActive] = useState<boolean>(false);
+  // const [isPTTUserSpeaking, setIsPTTUserSpeaking] = useState<boolean>(false);
 
     const sendClientEvent = (eventObj: EventObject, eventNameSuffix = "") => {
       if (dcRef.current && dcRef.current.readyState === "open") {
@@ -124,14 +124,14 @@ export default function Chat({ firstName }: { firstName: string }) {
       }
     }, [selectedAgentConfigSet, selectedAgentName, sessionStatus]);
 
-    useEffect(() => {
-      if (sessionStatus === "CONNECTED") {
-        console.log(
-          `updatingSession, isPTTACtive=${isPTTActive} sessionStatus=${sessionStatus}`
-        );
-        updateSession();
-      }
-    }, [isPTTActive]);
+    // useEffect(() => {
+    //   if (sessionStatus === "CONNECTED") {
+    //     console.log(
+    //       `updatingSession, isPTTACtive=${isPTTActive} sessionStatus=${sessionStatus}`
+    //     );
+    //     updateSession();
+    //   }
+    // }, [isPTTActive]);
 
     const fetchEphemeralKey = async (): Promise<string | null> => {
       logClientEvent({ url: "/session" }, "fetch_session_token_request");
@@ -184,7 +184,7 @@ export default function Chat({ firstName }: { firstName: string }) {
           handleServerEventRef.current(JSON.parse(e.data));
         });
 
-        setDataChannel(dc);
+        // setDataChannel(dc);
       } catch (err) {
         console.error("Error connecting to realtime:", err);
         setSessionStatus("DISCONNECTED");
@@ -202,9 +202,9 @@ export default function Chat({ firstName }: { firstName: string }) {
         pcRef.current.close();
         pcRef.current = null;
       }
-      setDataChannel(null);
+      // setDataChannel(null);
       setSessionStatus("DISCONNECTED");
-      setIsPTTUserSpeaking(false);
+      // setIsPTTUserSpeaking(false);
 
       logClientEvent({}, "disconnected");
     };
@@ -253,9 +253,9 @@ export default function Chat({ firstName }: { firstName: string }) {
         console.log("Current Agent Instructions:", currentAgent.instructions);
       }
 
-      const turnDetection = isPTTActive
+      const turnDetection = /*isPTTActive
         ? null
-        : {
+        :*/ {
             type: "server_vad",
             threshold: 0.5,
             prefix_padding_ms: 300,
@@ -336,27 +336,27 @@ export default function Chat({ firstName }: { firstName: string }) {
       sendClientEvent({ type: "response.create" }, "trigger response");
     };
 
-    const handleTalkButtonDown = () => {
-      if (sessionStatus !== "CONNECTED" || dataChannel?.readyState !== "open")
-        return;
-      cancelAssistantSpeech();
+    // const handleTalkButtonDown = () => {
+    //   if (sessionStatus !== "CONNECTED" || dataChannel?.readyState !== "open")
+    //     return;
+    //   cancelAssistantSpeech();
 
-      setIsPTTUserSpeaking(true);
-      sendClientEvent({ type: "input_audio_buffer.clear" }, "clear PTT buffer");
-    };
+    //   setIsPTTUserSpeaking(true);
+    //   sendClientEvent({ type: "input_audio_buffer.clear" }, "clear PTT buffer");
+    // };
 
-    const handleTalkButtonUp = () => {
-      if (
-        sessionStatus !== "CONNECTED" ||
-        dataChannel?.readyState !== "open" ||
-        !isPTTUserSpeaking
-      )
-        return;
+    // const handleTalkButtonUp = () => {
+    //   if (
+    //     sessionStatus !== "CONNECTED" ||
+    //     dataChannel?.readyState !== "open" ||
+    //     !isPTTUserSpeaking
+    //   )
+    //     return;
 
-      setIsPTTUserSpeaking(false);
-      sendClientEvent({ type: "input_audio_buffer.commit" }, "commit PTT");
-      sendClientEvent({ type: "response.create" }, "trigger response PTT");
-    };
+    //   setIsPTTUserSpeaking(false);
+    //   sendClientEvent({ type: "input_audio_buffer.commit" }, "commit PTT");
+    //   sendClientEvent({ type: "response.create" }, "trigger response PTT");
+    // };
 
     const onToggleConnection = () => {
       if (sessionStatus === "CONNECTED" || sessionStatus === "CONNECTING") {
@@ -382,10 +382,10 @@ export default function Chat({ firstName }: { firstName: string }) {
     };
 
     useEffect(() => {
-      const storedPushToTalkUI = localStorage.getItem("pushToTalkUI");
-      if (storedPushToTalkUI) {
-        setIsPTTActive(storedPushToTalkUI === "true");
-      }
+      // const storedPushToTalkUI = localStorage.getItem("pushToTalkUI");
+    //   if (storedPushToTalkUI) {
+    //     setIsPTTActive(storedPushToTalkUI === "true");
+    //   }
       const storedLogsExpanded = localStorage.getItem("logsExpanded");
       if (storedLogsExpanded) {
         setIsEventsPaneExpanded(storedLogsExpanded === "true");
@@ -396,9 +396,9 @@ export default function Chat({ firstName }: { firstName: string }) {
       }
     }, []);
 
-    useEffect(() => {
-      localStorage.setItem("pushToTalkUI", isPTTActive.toString());
-    }, [isPTTActive]);
+    // useEffect(() => {
+    //   localStorage.setItem("pushToTalkUI", isPTTActive.toString());
+    // }, [isPTTActive]);
 
     useEffect(() => {
       localStorage.setItem("logsExpanded", isEventsPaneExpanded.toString());
@@ -427,9 +427,9 @@ export default function Chat({ firstName }: { firstName: string }) {
               "Your conversation with " + selectedAgentName + " is active" :
               "Waiting to connect..."}
           </div>
-          {sessionStatus === "CONNECTED" && isPTTActive && (
+          {/* {sessionStatus === "CONNECTED" && isPTTActive && (
             <div className="mt-4 text-sm text-gray-600">Press the Talk button to speak</div>
-          )}
+          )} */}
         </div>
       </div>
     );
@@ -528,11 +528,11 @@ export default function Chat({ firstName }: { firstName: string }) {
         <BottomToolbar
           sessionStatus={sessionStatus}
           onToggleConnection={onToggleConnection}
-          isPTTActive={isPTTActive}
-          setIsPTTActive={setIsPTTActive}
-          isPTTUserSpeaking={isPTTUserSpeaking}
-          handleTalkButtonDown={handleTalkButtonDown}
-          handleTalkButtonUp={handleTalkButtonUp}
+          // isPTTActive={isPTTActive}
+          // setIsPTTActive={setIsPTTActive}
+          // isPTTUserSpeaking={isPTTUserSpeaking}
+          // handleTalkButtonDown={handleTalkButtonDown}
+          // handleTalkButtonUp={handleTalkButtonUp}
           isEventsPaneExpanded={isEventsPaneExpanded}
           setIsEventsPaneExpanded={setIsEventsPaneExpanded}
           isTranscriptVisible={isTranscriptVisible}
