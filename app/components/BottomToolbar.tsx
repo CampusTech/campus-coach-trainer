@@ -32,7 +32,7 @@ function BottomToolbar({
   const isConnecting = sessionStatus === "CONNECTING";
 
   function getConnectionButtonLabel() {
-    if (isConnected) return "Disconnect";
+    if (isConnected) return "End Call";
     if (isConnecting) return "Connecting...";
     return "Connect";
   }
