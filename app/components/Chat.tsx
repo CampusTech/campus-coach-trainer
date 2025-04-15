@@ -109,7 +109,7 @@ export default function Chat({ firstName }: { firstName: string }) {
       ) {
         let currentAgent;
         if (selectedAgentName === "Random Student") {
-          const randomIndex = Math.floor(Math.random() * (selectedAgentConfigSet.length - 1));
+          // const randomIndex = Math.floor(Math.random() * (selectedAgentConfigSet.length - 1));
           // currentAgent = selectedAgentConfigSet[randomIndex + 1];
         } else {
           currentAgent = selectedAgentConfigSet.find(
