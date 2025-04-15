@@ -108,9 +108,9 @@ export default function Chat({ firstName }: { firstName: string }) {
         selectedAgentName
       ) {
         let currentAgent;
-        if (selectedAgentName === "random-scenario") {
+        if (selectedAgentName === "Random Student") {
           const randomIndex = Math.floor(Math.random() * (selectedAgentConfigSet.length - 1));
-          currentAgent = selectedAgentConfigSet[randomIndex + 1];
+          // currentAgent = selectedAgentConfigSet[randomIndex + 1];
         } else {
           currentAgent = selectedAgentConfigSet.find(
             (a) => a.name === selectedAgentName
@@ -238,7 +238,7 @@ export default function Chat({ firstName }: { firstName: string }) {
       );
 
       let currentAgent;
-      if (selectedAgentName === "random-scenario" && selectedAgentConfigSet) {
+      if (selectedAgentName === "Random Student" && selectedAgentConfigSet) {
         const randomIndex = Math.floor(Math.random() * (selectedAgentConfigSet.length - 1));
         currentAgent = selectedAgentConfigSet[randomIndex + 1];
       } else {
@@ -424,7 +424,7 @@ export default function Chat({ firstName }: { firstName: string }) {
           <div className="text-2xl font-semibold mb-2">Call status:</div>
           <div className="text-gray-500">
             {sessionStatus === "CONNECTED" ?
-              "Your conversation with " + selectedAgentName + " is active" :
+              "Your call is active. Scenario: " + selectedAgentName :
               "Waiting to connect..."}
           </div>
           {/* {sessionStatus === "CONNECTED" && isPTTActive && (

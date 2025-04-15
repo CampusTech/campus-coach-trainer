@@ -4,7 +4,7 @@ import { AgentConfig } from "@/app/types";
 
 // KEEP THIS ONE FIRST!
 const random: AgentConfig = {
-  name: "random-scenario",
+  name: "Random Student",
   // publicDescription: "",
   instructions:
     "",
@@ -13,7 +13,7 @@ const random: AgentConfig = {
 
 
 const strugglingWithFamilyIssues: AgentConfig = {
-  name: "struggling-with-family-issue",
+  name: "Struggling with Family Issues",
   // publicDescription: "Student who is struggling at college.",
   instructions:
     "You are a student at an online college. You are talking to your coach, who supports you in and out of the classroom. \
@@ -25,7 +25,7 @@ const strugglingWithFamilyIssues: AgentConfig = {
 
 
 const strugglingWithPersonalIssues: AgentConfig = {
-  name: "struggling-with-personal-issues",
+  name: "Struggling with Personal Issues",
   // publicDescription: "Student who is struggling at college.",
   instructions:
     "You are a student at an online college. You are talking to your coach, who supports you in and out of the classroom. \
@@ -35,7 +35,7 @@ const strugglingWithPersonalIssues: AgentConfig = {
 
 
 const overeagerStudent: AgentConfig = {
-  name: "overeager-student",
+  name: "Overeager Student",
   // publicDescription: "Student who new to college, a little too eager to have everything figured out.",
   instructions:
     "You are a student at an online college. You are talking to your coach, who supports you in and out of the classroom. \
