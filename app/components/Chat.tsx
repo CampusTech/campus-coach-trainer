@@ -47,7 +47,7 @@ export default function Chat({ firstName }: { firstName: string }) {
     useState<SessionStatus>("DISCONNECTED");
 
   const [isEventsPaneExpanded, setIsEventsPaneExpanded] =
-    useState<boolean>(true);
+    useState<boolean>(false);
   const [isTranscriptVisible, setIsTranscriptVisible] = useState<boolean>(false);
   const [userText, setUserText] = useState<string>("");
   // const [isPTTActive, setIsPTTActive] = useState<boolean>(false);
