@@ -273,7 +273,7 @@ export default function Chat({ firstName }: { firstName: string }) {
         session: {
           modalities: ["text", "audio"],
           instructions,
-          voice: "coral",
+          voice: "sage",
           input_audio_format: "pcm16",
           output_audio_format: "pcm16",
           input_audio_transcription: { model: "whisper-1" },
@@ -286,7 +286,7 @@ export default function Chat({ firstName }: { firstName: string }) {
 
       if (shouldTriggerResponse) {
         console.log("Triggering simulated user message.");
-        sendSimulatedUserMessage("Hey, it's " + firstName + " here - your coach. What can I help you with today?");
+        // sendSimulatedUserMessage("Hey, it's " + firstName + " here - your coach. What can I help you with today?");
       }
     };
 
