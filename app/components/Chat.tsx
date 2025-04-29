@@ -27,8 +27,9 @@ interface EventObject {
   // Add other properties as needed
   [key: string]: unknown; // Use unknown instead of any
 }
+export default function Chat() {
+// export default function Chat({ firstName }: { firstName: string }) {
 
-export default function Chat({ firstName }: { firstName: string }) {
   const searchParams = useSearchParams();
 
   const { transcriptItems, addTranscriptMessage, addTranscriptBreadcrumb } =
@@ -209,27 +210,27 @@ export default function Chat({ firstName }: { firstName: string }) {
       logClientEvent({}, "disconnected");
     };
 
-    const sendSimulatedUserMessage = (text: string) => {
-    const id = uuidv4().slice(0, 32);
-      addTranscriptMessage(id, "user", text, true);
+    // const sendSimulatedUserMessage = (text: string) => {
+    // const id = uuidv4().slice(0, 32);
+    //   addTranscriptMessage(id, "user", text, true);
 
-      sendClientEvent(
-        {
-          type: "conversation.item.create",
-          item: {
-            id,
-            type: "message",
-            role: "user",
-            content: [{ type: "input_text", text }],
-          },
-        },
-        "(simulated user text message)"
-      );
-      sendClientEvent(
-        { type: "response.create" },
-        "(trigger response after simulated user text message)"
-      );
-    };
+    //   sendClientEvent(
+    //     {
+    //       type: "conversation.item.create",
+    //       item: {
+    //         id,
+    //         type: "message",
+    //         role: "user",
+    //         content: [{ type: "input_text", text }],
+    //       },
+    //     },
+    //     "(simulated user text message)"
+    //   );
+    //   sendClientEvent(
+    //     { type: "response.create" },
+    //     "(trigger response after simulated user text message)"
+    //   );
+    // };
 
     const updateSession = (shouldTriggerResponse: boolean = false) => {
       sendClientEvent(

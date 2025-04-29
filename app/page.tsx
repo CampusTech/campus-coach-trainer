@@ -48,7 +48,8 @@ export default async function Home() {
         </div>
         <TranscriptProvider>
           <EventProvider>
-            <Chat firstName={session?.user?.name?.split(' ')[0] ?? 'Coach'} />
+            {/* <Chat firstName={session?.user?.name?.split(' ')[0] ?? 'Coach'} /> */}
+            <Chat />
             {/* <Chat firstName="Mary" /> */}
           </EventProvider>
         </TranscriptProvider>
