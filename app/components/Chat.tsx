@@ -20,7 +20,7 @@ import { createRealtimeConnection } from "@/app/lib/realtimeConnection";
 
 import { allAgentSets, defaultAgentSetKey } from "@/app/agentConfigs";
 import { useSearchParams } from "next/navigation";
-import { v4 as uuidv4 } from 'uuid';
+// import { v4 as uuidv4 } from 'uuid';
 
 interface EventObject {
   type: string;
@@ -32,7 +32,7 @@ export default function Chat() {
 
   const searchParams = useSearchParams();
 
-  const { transcriptItems, addTranscriptMessage, addTranscriptBreadcrumb } =
+  const { transcriptItems, addTranscriptBreadcrumb } =
     useTranscript();
   const { logClientEvent, logServerEvent } = useEvent();
 
